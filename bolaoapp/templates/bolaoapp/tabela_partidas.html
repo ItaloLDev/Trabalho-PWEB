@@ -1,0 +1,10 @@
+<div>
+    <h1><a href="/">Bolão Futebol Clube!</a></h1>
+</div>
+
+{% for jogo in tabela %}
+    <div>
+        <h2><a href="">{{ jogo.time1 }} {{ jogo.time1_gols }} x  {{ jogo.time2_gols }} {{ jogo.time2 }}</a></h2>
+        <h4>Placar: {{ jogo.placar }}</h4>
+    </div>
+{% endfor %}
