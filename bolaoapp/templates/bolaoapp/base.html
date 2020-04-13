@@ -1,0 +1,37 @@
+{% load static %}
+
+<html>
+    <head>
+        <link href="//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+        <title>Bolão F.C</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="{% static 'css/bolaoapp.css' %}">
+        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
+    </head>
+    <body>
+        <div class="page-header">
+            {% if user.is_authenticated %}
+            <h4>Bem vindo(a) {{ user.username }}!</h4>
+            {% block header %}
+            {% endblock header %}
+            {%if user.is_superuser %}
+                <a href="{% url 'cadastrar_partida' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
+             {%endif%}
+            <a class="btn  btn-outline-light" href="{% url 'logout' %}" >Logout</a>
+            {% else %}
+                <a class="btn  btn-outline-light" href="{% url 'login' %}" >Login</a>
+            {% endif %}
+            <h1><a href="/">Bolão Futebol Clube!</a></h1>
+        </div>
+        <div class="content container" style="text-align: center;">
+            <div class="row">
+                <div class="col-md-8">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
