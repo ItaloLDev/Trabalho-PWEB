@@ -33,12 +33,14 @@
         {% if user.is_authenticated %}
             <div style="margin-top: -50px; margin-bottom: 65px;">
                 {% if jogo.isValidoParaAposta == True or  jogo.isValidoParaAposta == null  %}
-                    <a class="btn btn-outline-dark" href="{% url 'fazer_aposta' pk=jogo.pk %}" style="margin-left: 10px;">Apostar!</a>
+                {%if user.is_superuser %}
+                    <a class="btn btn-outline-dark" href="{% url 'fazer_aposta' pk=jogo.pk %}" style="margin-left: 10px;" disabled>Apostar!</a>
+                {% endif %}
                     {%if user.is_superuser %}
                         <a class="btn  btn-outline-dark" href="{% url 'definir_resultado' pk=jogo.pk %}"><span class="glyphicon glyphicon-pencil"></span> Definir Resultado</a>
                         <a class="btn  btn-outline-dark" href="{% url 'excluir_partida' pk=jogo.pk %}" style="height: 34px;"><span class="glyphicon glyphicon-remove" style="margin-top: 3px;"></span>Excluir</a>
                         <a class="btn  btn-outline-dark" href="{% url 'listar_apostas' pk=jogo.pk%}"  style="height: 34px;"><span class="glyphicon glyphicon-list" style="margin-top: 3px;"></span> Ver apostas</a>
-                        {% endif %}
+                    {% endif %}
                 {% else %}
                     <br>
                 {% endif %}
