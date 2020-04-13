@@ -9,5 +9,6 @@ urlpatterns = [
     path('partida/<int:pk>/definir_resultado/', views.definir_resultado, name='definir_resultado'),
     path('partida/<int:pk>/excluir_partida/', views.excluir_partida, name='excluir_partida'),
     path('partida/<int:pk>/listar_apostas/', views.listar_apostas, name='listar_apostas'),
-    path('login/', include('django.contrib.auth.urls')), # new
+    path('login/', include('django.contrib.auth.urls')), 
+    path('raking', views.ranking, name='ranking'),
 ]

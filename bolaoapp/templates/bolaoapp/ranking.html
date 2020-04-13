@@ -1,0 +1,15 @@
+{% extends 'bolaoapp/base.html' %}
+
+{% block content %}
+<a class="btn btn-default" href="{% url 'tabela_partidas' %}">Voltar</a>
+    {% for jogador in jogadores %}
+        <div class="post">
+            <h2>
+                <li>
+                    Nome: {{ jogador.user.username }}<br>
+                    <h3 style="margin-top: 5px;">Total: {{ jogador.credito }}</h3>
+                </li>
+            </h2> 
+        </div>
+    {% endfor %}
+{% endblock %}

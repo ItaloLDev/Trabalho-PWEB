@@ -116,3 +116,6 @@ def distribuir(partida, apostas, valor_geral):
     except Exception:
         return 
 
+def ranking(request):
+    jogadores = Jogador.objects.all().order_by('-credito')
+    return render(request, 'bolaoapp/ranking.html', {'jogadores': jogadores})

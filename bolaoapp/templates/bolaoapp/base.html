@@ -12,21 +12,22 @@
     <body>
         <div class="page-header">
             {% if user.is_authenticated %}
-            <h4>Bem vindo(a) {{ user.username }}!</h4>
-            {% block header %}
-            {% endblock header %}
-            {%if user.is_superuser %}
-                <a href="{% url 'cadastrar_partida' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
-             {%endif%}
-            <a class="btn  btn-outline-light" href="{% url 'logout' %}" >Logout</a>
+                <h4>Bem vindo(a) {{ user.username }}!</h4>
+                {% block header %}
+                {% endblock header %}
+                {%if user.is_superuser %}
+                    <a href="{% url 'cadastrar_partida' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span> Cadastrar Partida</a>
+                {%endif%}
+                <a class="btn  btn-outline-light" href="{% url 'logout' %}" >Logout</a>
             {% else %}
                 <a class="btn  btn-outline-light" href="{% url 'login' %}" >Login</a>
             {% endif %}
+            <a href="{% url 'ranking' %}" class="top-menu" style="margin-right: 30px; size: 20px;"><span class="glyphicon glyphicon-list-alt"></span> Ranking</a>
             <h1><a href="/">Bolão Futebol Clube!</a></h1>
         </div>
         <div class="content container" style="text-align: center;">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-8" style="position: relative;">
                     {% block content %}
                     {% endblock %}
                 </div>
