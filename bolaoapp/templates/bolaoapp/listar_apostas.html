@@ -1,0 +1,20 @@
+{% extends 'bolaoapp/base.html' %}
+
+{% block content %}
+    <br>
+    <br>
+        {% with apostas.all|first as aposta %}
+            <h1>Lista de apostas para {{ aposta.partida.time1 }} x {{aposta.partida.time2}}</h1><a class="btn btn-default" href="{% url 'tabela_partidas' %}">Voltar</a>
+        {% endwith %}
+    
+    {% for aposta in apostas.all %}
+        <ol>
+        <li>
+            <h3>
+                Jogador: {{ aposta.apostador.user.username }} || Vencedor: {{ aposta.resultado }} || Placar apostado: {{ aposta.placar }} <br> Valor apostado: {{ aposta.valor_aposta }}  
+            </h3> 
+        </li>
+        </ol>
+    {% endfor %}
+    
+{% endblock %}

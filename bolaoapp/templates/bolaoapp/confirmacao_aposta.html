@@ -1,0 +1,10 @@
+{% extends 'bolaoapp/base.html' %}
+
+{% block content %}
+    <div class="post">
+        <h1>Confira sua aposta!</h1>
+        <h2 >{{ aposta.partida.time1 }} x {{ aposta.partida.time2 }} </h2>
+        <h2>Placar: {{ aposta.placar }} || Vencedor: {{ aposta.resultado }} ||Valor apostado: {{ aposta.valor_aposta }}</h2>
+        <a class="btn btn-default" href="{% url 'tabela_partidas' %}">Voltar</a>
+    </div>
+{% endblock %}
