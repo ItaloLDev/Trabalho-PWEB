@@ -1,9 +1,20 @@
 {% extends 'bolaoapp/base.html' %}
 
 {% block content %}
+
+    {% if messages %}
+        <ul class="messages" style="margin-left: -140px;" >
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade in"  style="margin-left: 100px; color: black; ">
+                    <h4 {% if message.tags %} class=" {{ message.tags }} " {% endif %} style="padding: 5px; height: 25px;"> {{ message }}</h4>
+                </div>
+            {% endfor %}
+        </ul>
+    {% endif %}
     <h2>Nova partida</h2>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
+        <a class="btn btn-default" href="{% url 'tabela_partidas' %}" style="margin-right: -70ex;">Voltar</a>
         <button type="submit" class="save btn btn-default">Salvar</button>
     </form>
 {% endblock %}

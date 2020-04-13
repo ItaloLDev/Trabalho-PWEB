@@ -24,7 +24,6 @@ def listar_apostas(request, pk):
     apostas = Aposta.objects.filter(partida=get_object_or_404(Partida, pk=pk))
     return render(request, 'bolaoapp/listar_apostas.html', {'apostas': apostas})
 
-
 def fazer_aposta(request, pk):
     jogador = Jogador.objects.get(user=User.objects.get(username=request.user.username))
     partida = Partida.objects.get(pk=pk) 
@@ -65,23 +64,38 @@ def cadastrar_partida(request):
 
 def definir_resultado(request, pk):
     partida = Partida.objects.get(pk=pk) 
-    if request.method == "POST":
-        form = CadastrarPartidaForm(request.POST, instance=partida)
-        if form.is_valid():
-            partida = form.save(commit=False)
-            apostas = Aposta.objects.filter(partida=get_object_or_404(Partida, pk=pk))
-            valor_geral = apostas.aggregate(Sum('valor_aposta'))
-            distribuir(partida, apostas,valor_geral)
-            partida.save()
-            return redirect('tabela_partidas')
-    else:
-        form = CadastrarPartidaForm(instance=partida)
-    return render(request, 'bolaoapp/cadastrar_partida.html', {'form': form})
-    
+    if not partida.isValidoParaAposta:
+        messages.error(request, 'Essa partida já teve o resultado definido. Não é possível editar seu resultado.')
+        return redirect('tabela_partidas') 
+    else:   
+        if request.method == "POST":
+            form = CadastrarPartidaForm(request.POST, instance=partida)
+            if form.is_valid():
+                partida = form.save(commit=False)
+                apostas = Aposta.objects.filter(partida=get_object_or_404(Partida, pk=pk))
+                valor_geral = apostas.aggregate(Sum('valor_aposta'))
+                distribuir(partida, apostas,valor_geral)
+                partida.isValidoParaAposta = False
+                partida.save()
+                return redirect('tabela_partidas')
+        else:
+            messages.warning(request, 'Atenção! Partidas finalizadas não podem ser excluídas ou editadas. Após definido o resultado, não será possível modifica-lo. ')
+            form = CadastrarPartidaForm(instance=partida)
+        return render(request, 'bolaoapp/cadastrar_partida.html', {'form': form})
+        
 def excluir_partida(request, pk):
     partida = get_object_or_404(Partida, pk=pk)
-    partida.delete()
-    return render(request, 'bolaoapp/excluir_partida.html', )
+    apostas = Aposta.objects.filter(partida=get_object_or_404(Partida, pk=pk))
+    if partida.isValidoParaAposta == True:
+        for aposta in apostas:
+            jogador = Jogador.objects.get(pk=aposta.apostador.pk)
+            jogador.credito += aposta.valor_aposta
+            jogador.save(update_fields=['credito'])
+        partida.delete()
+        return render(request, 'bolaoapp/excluir_partida.html', )
+    else:
+        messages.error(request, 'Não é permitido excluir partidas já finalizadas.')
+        return redirect('tabela_partidas') 
 
 def login(request):
     template = loader.get_template('login.html')
@@ -92,32 +106,30 @@ def login(request):
 def distribuir(partida, apostas, valor_geral):
     try: 
         resultado = partida.getResultado()
-        print("foi")
         if apostas:
             apostas_corretas_placar = apostas.filter(placar=partida.placar)
-            print(apostas_corretas_placar)
+            apostas_corretas_vencedor = apostas.filter(resultado=resultado)
             if apostas_corretas_placar:
                 valor_dividido = valor_geral['valor_aposta__sum'] / apostas_corretas_placar.count()
-                print(valor_dividido)
                 for aposta in apostas_corretas_placar:
                     jogador = Jogador.objects.get(pk=aposta.apostador.pk)
-                    print('Antes: ', jogador.credito)
                     jogador.credito += valor_dividido
                     jogador.save(update_fields=['credito'])
-                    print('Valor atualizado: ', jogador.credito) 
-
-            else:
-                print("teste") 
-                apostas_corretas_vencedor = apostas.filter(resultado=resultado)
-                print(apostas_corretas_vencedor) 
+            elif apostas_corretas_vencedor:
                 if apostas_corretas_vencedor:
                     valor_dividido = valor_geral['valor_aposta__sum'] / apostas_corretas_vencedor.count()
                     for aposta in apostas_corretas_vencedor:
                         jogador = Jogador.objects.get(pk=aposta.apostador.pk)
-                        print('Antes: ', jogador.credito)
                         jogador.credito += valor_dividido
                         jogador.save(update_fields=['credito'])
-                        print('Valor atualizado: ', jogador.credito) 
+            else:
+                for aposta in apostas:
+                    jogador = Jogador.objects.get(pk=aposta.apostador.pk)
+                    jogador.credito += aposta.valor_aposta
+                    jogador.save(update_fields=['credito'])
     except Exception:
         return 
 
+def ranking(request):
+    jogadores = Jogador.objects.all().order_by('-credito')
+    return render(request, 'bolaoapp/ranking.html', {'jogadores': jogadores})

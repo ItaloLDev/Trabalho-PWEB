@@ -7,7 +7,7 @@ class CadastrarPartidaForm(forms.ModelForm):
 
     class Meta:
         model = Partida
-        fields = ('codigoPartida', 'time1', 'time2', 'qtdGols_time1', 'qtdGols_time2', 'placar', 'campeonato' ,  'isValidoParaAposta')
+        fields = ('codigoPartida', 'time1', 'time2', 'qtdGols_time1', 'qtdGols_time2', 'placar', 'campeonato')
 
 class ApostarForm(forms.ModelForm):
 

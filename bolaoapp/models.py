@@ -13,7 +13,7 @@ class Partida(models.Model):
     qtdGols_time1 = models.IntegerField()
     qtdGols_time2 = models.IntegerField()
     placar = models.CharField(max_length=6, blank=True)
-    isValidoParaAposta = models.BooleanField(null=True)
+    isValidoParaAposta = models.BooleanField(default=True)
     campeonato = models.CharField(max_length=25)
 
     def cadastrar(self):

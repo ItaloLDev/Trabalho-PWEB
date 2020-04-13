@@ -14,15 +14,19 @@
         {% for message in messages %}
             <div class="alert alert-info alert-dismissible fade in"  style="width: 300px; margin-left: 200px; color: black;">
                 <span style="font-size: 20pt; " class="closebtn" onclick="this.parentElement.style.display='none';" >&times;</span>
-                <h4 {% if message.tags %} class=" {{ message.tags }} " {% endif %} style="padding: -10px; height: 5px;"> {{ message }}</h4>
+                <h4 {% if message.tags %} class=" {{ message.tags }} " {% endif %} style="padding: -10px; height: 40px;"> {{ message }}</h4>
             </div>
         {% endfor %}
     </ul>
     {% endif %}
     {% for jogo in tabela %}
+    {%if jogo.isValidoParaAposta == False%}
+        <h3 style="color: red; margin-bottom: -10px;"> Partida finalizada!</h4>   
+    {%endif%}
     <h4 style="color: black; margin-bottom: -10px;"> {{jogo.campeonato}}</h4>   
         <div class="post">
             <h2>
+                
                 {% if jogo.qtdGols_time1 == -1 %}
                     {{ jogo.time1 }} x {{ jogo.time2 }}
                 {% else %}
@@ -30,21 +34,21 @@
                 {% endif %}
             </h2> 
         </div>
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and not user.is_superuser %}
             <div style="margin-top: -50px; margin-bottom: 65px;">
                 {% if jogo.isValidoParaAposta == True or  jogo.isValidoParaAposta == null  %}
-                {%if user.is_superuser %}
-                    <a class="btn btn-outline-dark" href="{% url 'fazer_aposta' pk=jogo.pk %}" style="margin-left: 10px;" disabled>Apostar!</a>
-                {% endif %}
-                    {%if user.is_superuser %}
-                        <a class="btn  btn-outline-dark" href="{% url 'definir_resultado' pk=jogo.pk %}"><span class="glyphicon glyphicon-pencil"></span> Definir Resultado</a>
-                        <a class="btn  btn-outline-dark" href="{% url 'excluir_partida' pk=jogo.pk %}" style="height: 34px;"><span class="glyphicon glyphicon-remove" style="margin-top: 3px;"></span>Excluir</a>
-                        <a class="btn  btn-outline-dark" href="{% url 'listar_apostas' pk=jogo.pk%}"  style="height: 34px;"><span class="glyphicon glyphicon-list" style="margin-top: 3px;"></span> Ver apostas</a>
-                    {% endif %}
-                {% else %}
-                    <br>
+                    <a class="btn btn-outline-dark" href="{% url 'fazer_aposta' pk=jogo.pk %}" style="margin-left: 10px;">Apostar!</a>
                 {% endif %}
             </div>
-            {%endif%}
+        {%elif user.is_superuser %}
+           
+            <div style="margin-top: -50px; margin-bottom: 65px;">
+                {%if jogo.isValidoParaAposta == True %}
+                    <a class="btn  btn-outline-dark" href="{% url 'definir_resultado' pk=jogo.pk %}" ><span class="glyphicon glyphicon-pencil"></span> Definir Resultado</a>
+                    <a class="btn  btn-outline-dark" href="{% url 'excluir_partida' pk=jogo.pk %}" style="height: 34px;"><span class="glyphicon glyphicon-remove" style="margin-top: 3px;"></span>Excluir</a>
+                {%endif%}
+                <a class="btn  btn-outline-dark" href="{% url 'listar_apostas' pk=jogo.pk%}"  style="height: 34px;"><span class="glyphicon glyphicon-list" style="margin-top: 3px;"></span> Ver apostas</a>
+            </div>
+        {% endif %}
     {% endfor %}
 {% endblock %}
