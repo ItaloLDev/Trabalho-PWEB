@@ -22,7 +22,8 @@ def tabela_partidas(request):
     
 def listar_apostas(request, pk):
     apostas = Aposta.objects.filter(partida=get_object_or_404(Partida, pk=pk))
-    return render(request, 'bolaoapp/listar_apostas.html', {'apostas': apostas})
+    partida = Partida.objects.get(pk=pk) 
+    return render(request, 'bolaoapp/listar_apostas.html', {'apostas': apostas, 'partida':partida})
 
 def fazer_aposta(request, pk):
     jogador = Jogador.objects.get(user=User.objects.get(username=request.user.username))

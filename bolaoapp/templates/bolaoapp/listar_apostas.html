@@ -3,9 +3,9 @@
 {% block content %}
     <br>
     <br>
-        {% with apostas.all|first as aposta %}
-            <h1>Lista de apostas para {{ aposta.partida.time1 }} x {{aposta.partida.time2}}</h1><a class="btn btn-default" href="{% url 'tabela_partidas' %}">Voltar</a>
-        {% endwith %}
+    <h1>Lista de apostas para {{ partida.time1 }} x {{partida.time2}}</h1>
+    <a class="btn btn-default" href="{% url 'tabela_partidas' %}" style="margin-top: 10px;">Voltar</a>
+    <br>
     
     {% for aposta in apostas.all %}
         <ol>
