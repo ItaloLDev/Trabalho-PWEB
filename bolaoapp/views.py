@@ -92,32 +92,27 @@ def login(request):
 def distribuir(partida, apostas, valor_geral):
     try: 
         resultado = partida.getResultado()
-        print("foi")
         if apostas:
             apostas_corretas_placar = apostas.filter(placar=partida.placar)
-            print(apostas_corretas_placar)
+            apostas_corretas_vencedor = apostas.filter(resultado=resultado)
             if apostas_corretas_placar:
                 valor_dividido = valor_geral['valor_aposta__sum'] / apostas_corretas_placar.count()
-                print(valor_dividido)
                 for aposta in apostas_corretas_placar:
                     jogador = Jogador.objects.get(pk=aposta.apostador.pk)
-                    print('Antes: ', jogador.credito)
                     jogador.credito += valor_dividido
                     jogador.save(update_fields=['credito'])
-                    print('Valor atualizado: ', jogador.credito) 
-
-            else:
-                print("teste") 
-                apostas_corretas_vencedor = apostas.filter(resultado=resultado)
-                print(apostas_corretas_vencedor) 
+            elif apostas_corretas_vencedor:
                 if apostas_corretas_vencedor:
                     valor_dividido = valor_geral['valor_aposta__sum'] / apostas_corretas_vencedor.count()
                     for aposta in apostas_corretas_vencedor:
                         jogador = Jogador.objects.get(pk=aposta.apostador.pk)
-                        print('Antes: ', jogador.credito)
                         jogador.credito += valor_dividido
                         jogador.save(update_fields=['credito'])
-                        print('Valor atualizado: ', jogador.credito) 
+            else:
+                for aposta in apostas:
+                    jogador = Jogador.objects.get(pk=aposta.apostador.pk)
+                    jogador.credito += aposta.valor_aposta
+                    jogador.save(update_fields=['credito'])
     except Exception:
         return 
 
