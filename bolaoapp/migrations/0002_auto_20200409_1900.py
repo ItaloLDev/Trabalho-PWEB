@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='partida',
-            name='codigoPartida',
+            name='',
             field=models.CharField(max_length=8),
         ),
         migrations.AlterField(

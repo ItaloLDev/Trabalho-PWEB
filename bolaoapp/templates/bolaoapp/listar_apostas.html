@@ -11,7 +11,15 @@
         <ol>
         <li>
             <h3>
-                Jogador: {{ aposta.apostador.user.username }} || Vencedor: {{ aposta.resultado }} || Placar apostado: {{ aposta.placar }} <br> Valor apostado: {{ aposta.valor_aposta }}  
+                <p>
+                    Jogador: {{ aposta.apostador.user.username }}
+                </p>
+                <p>
+                    Aposta: {{ partida.time1 }} {{aposta.qtdGols_time1 }} x {{aposta.qtdGols_time2 }} {{partida.time2}}
+                </p>
+                <p>
+                    Valor apostado: {{ aposta.valor_aposta }}  
+                </p>
             </h3> 
         </li>
         </ol>

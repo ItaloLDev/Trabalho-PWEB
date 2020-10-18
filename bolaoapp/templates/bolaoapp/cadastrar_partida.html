@@ -13,8 +13,22 @@
     {% endif %}
     <h2>Nova partida</h2>
     <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
-        <a class="btn btn-default" href="{% url 'tabela_partidas' %}" style="margin-right: -70ex;">Voltar</a>
-        <button type="submit" class="save btn btn-default">Salvar</button>
-    </form>
+        <div class="form-group"> 
+            <label> Time 1</label> 
+            {{ form.time1 }} 
+        </div> 
+        <div class="form-group"> 
+            <label>Time 2 </label> 
+            {{ form.time2 }} 
+        </div> 
+        <div class="form-group"> 
+            <label>Campeonato</label> 
+            {{ form.campeonato }} 
+        </div> 
+        
+        <div style="margin-top: 40px">
+            <a style="margin-left: 50;" class="btn btn-default" href="{% url 'tabela_partidas' %}" >Voltar</a>
+            <button style="margin-right: 200;" type="submit" class="save btn btn-default">Salvar</button>
+        </div>
+    </form> 
 {% endblock %}

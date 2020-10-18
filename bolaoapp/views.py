@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Partida
 from django.shortcuts import render, get_object_or_404
 from .forms import CadastrarPartidaForm
+from .forms import DefinirResultadoForm
 from .forms import ApostarForm
 from django.shortcuts import redirect
 from .models import Jogador
@@ -56,8 +57,13 @@ def cadastrar_partida(request):
     if request.method == "POST":
          form = CadastrarPartidaForm(request.POST)
          if form.is_valid():
-            partida = form.save(commit=False)
-            partida.save()
+            partida = Partida()
+            partida.time1 = str(form.cleaned_data["time1"])
+            partida.time2 = str(form.cleaned_data["time2"])
+            partida.campeonato = str(form.cleaned_data["campeonato"])
+            partida.qtdGols_time1 = -1
+            partida.qtdGols_time2 = -1
+            partida.cadastrar()
             return redirect('tabela_partidas')
     else:
         form = CadastrarPartidaForm()
@@ -70,7 +76,7 @@ def definir_resultado(request, pk):
         return redirect('tabela_partidas') 
     else:   
         if request.method == "POST":
-            form = CadastrarPartidaForm(request.POST, instance=partida)
+            form = DefinirResultadoForm(request.POST, instance=partida)
             if form.is_valid():
                 partida = form.save(commit=False)
                 apostas = Aposta.objects.filter(partida=get_object_or_404(Partida, pk=pk))
@@ -81,8 +87,10 @@ def definir_resultado(request, pk):
                 return redirect('tabela_partidas')
         else:
             messages.warning(request, 'Atenção! Partidas finalizadas não podem ser excluídas ou editadas. Após definido o resultado, não será possível modifica-lo. ')
-            form = CadastrarPartidaForm(instance=partida)
-        return render(request, 'bolaoapp/cadastrar_partida.html', {'form': form})
+            form = DefinirResultadoForm(instance=partida)
+            form.qtdGols_time1 = 0
+            form.qtdGols_time2 = 0
+        return render(request, 'bolaoapp/definir_resultado.html', {'form': form})
         
 def excluir_partida(request, pk):
     partida = get_object_or_404(Partida, pk=pk)
@@ -107,22 +115,28 @@ def login(request):
 def distribuir(partida, apostas, valor_geral):
     try: 
         resultado = partida.getResultado()
+        print(resultado)
         if apostas:
-            apostas_corretas_placar = apostas.filter(placar=partida.placar)
-            apostas_corretas_vencedor = apostas.filter(resultado=resultado)
+            apostas_corretas_placar = apostas.filter(qtdGols_time1=partida.qtdGols_time1, qtdGols_time2=partida.qtdGols_time2)
+            print('uiui')
+            apostas_corretas_resultado = []
+            apostas_corretas_resultado = getApostasPorResultado(apostas, resultado)
+            print('antes')
             if apostas_corretas_placar:
+                print('placar')
                 valor_dividido = valor_geral['valor_aposta__sum'] / apostas_corretas_placar.count()
+                print(valor_dividido)
                 for aposta in apostas_corretas_placar:
                     jogador = Jogador.objects.get(pk=aposta.apostador.pk)
                     jogador.credito += valor_dividido
                     jogador.save(update_fields=['credito'])
-            elif apostas_corretas_vencedor:
-                if apostas_corretas_vencedor:
-                    valor_dividido = valor_geral['valor_aposta__sum'] / apostas_corretas_vencedor.count()
-                    for aposta in apostas_corretas_vencedor:
-                        jogador = Jogador.objects.get(pk=aposta.apostador.pk)
-                        jogador.credito += valor_dividido
-                        jogador.save(update_fields=['credito'])
+            elif apostas_corretas_resultado:
+                print('resultado')
+                valor_dividido = valor_geral['valor_aposta__sum'] / len(apostas_corretas_resultado)
+                for aposta in apostas_corretas_resultado:
+                    jogador = Jogador.objects.get(pk=aposta.apostador.pk)
+                    jogador.credito += valor_dividido
+                    jogador.save(update_fields=['credito'])
             else:
                 for aposta in apostas:
                     jogador = Jogador.objects.get(pk=aposta.apostador.pk)
@@ -134,3 +148,15 @@ def distribuir(partida, apostas, valor_geral):
 def ranking(request):
     jogadores = Jogador.objects.all().order_by('-credito')
     return render(request, 'bolaoapp/ranking.html', {'jogadores': jogadores})
+
+def getApostasPorResultado(apostas, resultado):
+    print('entrou')
+    lista = []
+    for aposta in apostas:
+        if aposta.getResultado() == resultado:
+            print('entrou2')
+            lista.append(aposta)
+    print(len(lista))
+    return lista
+
+
