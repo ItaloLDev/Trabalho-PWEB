@@ -19,3 +19,4 @@ Usuario  | Senha
 -------- | ---
 admin    | admin
 usuario  | 123456usr
+usuario2  | 123456usr
